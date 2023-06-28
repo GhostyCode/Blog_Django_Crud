@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-4 offset-4">
+            <div class="card" style="padding:16px;">
+                <h1>{{ object.titulo }}</h1>
+                <img src="{{object.miniatura.url}}" class="card-img-top" alt="...">
+                <hr />
+
+                <div>
+                    <span> <i class="fas fa-thumbs-up ml-2"></i> {{object.get_like_count}}</span>
+                    <span> <i class="fas fa-thumbs-down ml-2"></i> {{object.get_dislike_count}}</span>
+                    <span> <i class="fas fa-eye ml-2"></i> {{object.get_view_count}}</span>
+                    <span> <i class="fas fa-comments ml-2"></i> {{object.get_comment_count}}</span>
+                </div>
+
+                <hr />
+
+                <div style="padding: 10px;">
+                    <p>{{object.contenido}}</p>
+                </div>
+
+                <hr />
+                
+                <div>
+                    <h4>¿Te gusta esta publicación?</h4>
+                    <a class="text-muted" href="{{ object.get_like_url }}">
+                        <i class="fas fa-thumbs-up fa-lg "></i>
+                        {{object.get_like_count}}
+                    </a>
+
+                    <a class="text-muted" href="{{ object.get_dislike_url }}">
+                        <i class="fas fa-thumbs-down fa-lg"></i>
+                        {{object.get_dislike_count}}
+                    </a>
+
+                    <hr />
+
+                    {% if request.user.is_authenticated %}
+                        <h4>Deja un comentario:</h4>
+                        <form method="POST">
+                            {% csrf_token %}
+                            {{form|crispy}}
+                            <button class='btn btn-primary' type='submit'>Comentario</button>
+                        </form>
+                        <hr />
+                        <h5>Comentarios</h5>
+                        {% for comentario in object.comment %}
+                            <div>
+                                <p>
+                                    {{ comentario.contenido }}
+                                    <br />
+                                    <small> {{comentario.fecha_publicacion|timesince}} ago </small>
+                                </p>
+                            </div>
+                            <hr />
+                        {% endfor %}
+                    {% else %}
+                        <a href="{% url 'account_login' %}" class="btn btn-primary brn-block">Inicia sesión para comentar </a>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+
